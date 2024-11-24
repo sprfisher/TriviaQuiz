@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Children's Bible Trivia</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f9;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .question {
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+        .options button {
+            display: block;
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 10px;
+            font-size: 16px;
+            background: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .options button:hover {
+            background: #0056b3;
+        }
+        .message {
+            margin-top: 20px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="quiz">
+            <div class="question" id="question"></div>
+            <div class="options" id="options"></div>
+        </div>
+        <div class="message" id="message"></div>
+    </div>
+
+    <script>
+        const questions = [
+            { question: "Who built the ark?", options: ["A. Noah", "B. Moses", "C. Abraham", "D. David"], answer: "A" },
+            { question: "What did God create on the first day?", options: ["A. Land", "B. Light", "C. Animals", "D. Humans"], answer: "B" },
+            { question: "What was the name of the first woman?", options: ["A. Mary", "B. Sarah", "C. Eve", "D. Ruth"], answer: "C" },
+            { question: "Which sea did Moses part?", options: ["A. Red Sea", "B. Dead Sea", "C. Sea of Galilee", "D. Mediterranean Sea"], answer: "A" },
+            { question: "What food fell from heaven to feed the Israelites?", options: ["A. Manna", "B. Quail", "C. Bread", "D. Figs"], answer: "A" },
+            { question: "Who was swallowed by a big fish?", options: ["A. Jonah", "B. Paul", "C. Peter", "D. John"], answer: "A" },
+            { question: "How many commandments did God give Moses?", options: ["A. 5", "B. 10", "C. 15", "D. 20"], answer: "B" },
+            { question: "Who was the strongest man in the Bible?", options: ["A. David", "B. Goliath", "C. Samson", "D. Saul"], answer: "C" },
+            { question: "What did David use to defeat Goliath?", options: ["A. Sword", "B. Spear", "C. Sling and Stone", "D. Bow and Arrow"], answer: "C" },
+            { question: "Who was the mother of Jesus?", options: ["A. Elizabeth", "B. Mary", "C. Martha", "D. Ruth"], answer: "B" },
+            { question: "Who was thrown into the lion's den?", options: ["A. Jonah", "B. Daniel", "C. Ezekiel", "D. Elijah"], answer: "B" },
+            { question: "What did God use to guide the Israelites by night?", options: ["A. Fire", "B. Wind", "C. Star", "D. Angel"], answer: "A" },
+            { question: "Who led the Israelites into the Promised Land?", options: ["A. Moses", "B. Aaron", "C. Joshua", "D. Caleb"], answer: "C" },
+            { question: "Who betrayed Jesus?", options: ["A. Peter", "B. Judas", "C. Thomas", "D. John"], answer: "B" },
+            { question: "What is the shortest book in the Bible?", options: ["A. Obadiah", "B. Jude", "C. Philemon", "D. Jonah"], answer: "A" },
+            { question: "What was Jesus' first miracle?", options: ["A. Healing the Blind", "B. Walking on Water", "C. Turning Water into Wine", "D. Feeding 5,000"], answer: "C" },
+            { question: "What was the name of the man who was raised from the dead by Jesus?", options: ["A. Lazarus", "B. John", "C. Peter", "D. Zacchaeus"], answer: "A" },
+            { question: "How many days did it rain during the flood?", options: ["A. 30", "B. 40", "C. 50", "D. 60"], answer: "B" },
+            { question: "Who denied Jesus three times?", options: ["A. Judas", "B. Peter", "C. Thomas", "D. Paul"], answer: "B" },
+            { question: "What was the name of Jesus' earthly father?", options: ["A. Joseph", "B. Jacob", "C. John", "D. James"], answer: "A" },
+            { question: "How many plagues did God send to Egypt?", options: ["A. 5", "B. 7", "C. 10", "D. 12"], answer: "C" },
+            { question: "What was the Tower of Babel built for?", options: ["A. To reach Heaven", "B. To worship God", "C. As a Fortress", "D. To store Grain"], answer: "A" },
+            { question: "What did God turn Lot’s wife into?", options: ["A. A pillar of salt", "B. A tree", "C. A statue", "D. A shadow"], answer: "A" },
+            { question: "Who wrote most of the Psalms?", options: ["A. Solomon", "B. David", "C. Moses", "D. Asaph"], answer: "B" },
+            { question: "Who was the first murderer in the Bible?", options: ["A. Cain", "B. Abel", "C. Esau", "D. Lamech"], answer: "A" }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        const incorrectAnswers = [];
+
+        function loadQuestion() {
+            if (currentQuestion >= questions.length) {
+                showResults();
+                return;
+            }
+            const questionObj = questions[currentQuestion];
+            document.getElementById("question").textContent = questionObj.question;
+            const optionsDiv = document.getElementById("options");
+            optionsDiv.innerHTML = "";
+            questionObj.options.forEach(option => {
+                const button = document.createElement("button");
+                button.textContent = option;
+                button.onclick = () => checkAnswer(option);
+                optionsDiv.appendChild(button);
+            });
+        }
+
+        function checkAnswer(selectedOption) {
+            const current = questions[currentQuestion];
+            if (selectedOption.startsWith(current.answer)) {
+                score++;
+            } else {
+                incorrectAnswers.push(`Question: ${current.question}, Your Answer: ${selectedOption}, Correct Answer: ${current.answer}`);
+            }
+            currentQuestion++;
+            loadQuestion();
+        }
+
+        function showResults() {
+            const quizDiv = document.getElementById("quiz");
+            quizDiv.innerHTML = `
+                <div class="result">
+                    <h2>Quiz Complete!</h2>
+                    <p>Your Score: ${score}/${questions.length}</p>
+                    <h3>Incorrect Answers:</h3>
+                    <ul>${incorrectAnswers.map(ans => `<li>${ans}</li>`).join("")}</ul>
+                </div>
+            `;
+        }
+
+        loadQuestion();
+    </script>
+</body>
+</html>
